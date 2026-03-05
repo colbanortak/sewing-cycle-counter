@@ -1,0 +1,105 @@
+# ============================================================
+# Sewing Cycle Counter - Varsayılan Konfigürasyon
+# ============================================================
+
+# --- Kamera Ayarları ---
+camera:
+  source: 0                     # 0=USB webcam, veya RTSP URL (ip kamera)
+  resolution: [1280, 720]       # Çözünürlük [genişlik, yükseklik]
+  fps: 30                       # Hedef FPS
+  flip_horizontal: false        # Yatay aynalama
+
+# --- MediaPipe El Takip Ayarları ---
+tracker:
+  model_complexity: 1           # 0=hafif, 1=orta, 2=ağır (doğruluk artar)
+  min_detection_confidence: 0.6 # El algılama eşiği
+  min_tracking_confidence: 0.5  # El takip eşiği
+  max_num_hands: 2              # Takip edilecek max el sayısı
+
+  # Takip edilen landmark noktaları (MediaPipe Hand indeksleri)
+  # 0=WRIST, 5=INDEX_MCP, 8=INDEX_TIP, 9=MIDDLE_MCP, 12=MIDDLE_TIP
+  tracked_landmarks: [0, 5, 8, 9, 12]
+
+  # Ana sinyal kaynağı landmark
+  primary_landmark: 0           # WRIST - en stabil nokta
+
+# --- Sinyal İşleme Ayarları ---
+signal:
+  # Sinyal türü: "y_position" | "velocity" | "acceleration" | "combined"
+  signal_type: "combined"
+
+  # Yumuşatma (Smoothing)
+  smoothing_window: 15          # Hareketli ortalama pencere boyutu (frame)
+  smoothing_method: "savgol"    # "moving_avg" | "savgol" | "gaussian"
+  savgol_polyorder: 3           # Savitzky-Golay polinom derecesi
+
+  # Butterworth bandpass filtre
+  bandpass_enabled: true
+  bandpass_low_hz: 0.1          # Alt frekans kesim (çok yavaş hareketleri kes)
+  bandpass_high_hz: 3.0         # Üst frekans kesim (titreşimi kes)
+
+  # Normalizasyon
+  normalize: true               # Sinyali 0-1 arasına normalize et
+
+# --- Döngü Tespit Ayarları ---
+detection:
+  # Peak Detection
+  min_cycle_duration_sec: 1.5   # Minimum döngü süresi (saniye)
+  max_cycle_duration_sec: 15.0  # Maksimum döngü süresi (saniye)
+  peak_prominence: 0.15         # Peak belirginliği (0-1, normalize sinyal için)
+  peak_height: 0.3              # Minimum peak yüksekliği
+
+  # Template Matching
+  similarity_threshold: 0.6     # DTW/korelasyon eşiği (0-1)
+  use_template_matching: true   # Template matching aktif mi
+  template_match_method: "correlation"  # "correlation" | "dtw"
+
+  # Adaptif eşik
+  adaptive_threshold: true      # Çalışma sırasında eşikleri ayarla
+  warmup_cycles: 5              # İlk N döngüde kalibrasyon yap
+
+# --- Referans Eğitim Ayarları ---
+training:
+  expected_cycles: 50           # Referans videodaki beklenen döngü sayısı
+  min_cycles_for_profile: 30    # Profil oluşturmak için min döngü
+  augmentation_enabled: true    # Veri artırma
+  augmentation_factor: 4        # Her döngüden kaç varyasyon üret
+
+  # Otomatik segmentasyon
+  auto_segment: true            # Döngüleri otomatik böl
+  manual_markers: false         # Manuel işaretleme modu
+
+# --- Veritabanı Ayarları ---
+database:
+  path: "data/logs/production.db"  # SQLite veritabanı yolu
+  log_interval_sec: 1.0           # Sayım logu yazma aralığı
+
+# --- API Sunucu Ayarları ---
+api:
+  host: "0.0.0.0"
+  port: 8080
+  cors_origins: ["*"]
+
+# --- Görselleştirme ---
+visualization:
+  show_preview: true            # Canlı önizleme penceresi
+  show_signal_plot: true        # Sinyal grafiği göster
+  show_landmarks: true          # El landmark noktalarını göster
+  plot_window_sec: 30           # Grafik pencere boyutu (saniye)
+  overlay_count: true           # Sayacı video üzerine yaz
+  record_output: false          # Çıktı videosunu kaydet
+  output_path: "data/logs/"     # Kayıt yolu
+
+# --- Performans ---
+performance:
+  process_every_n_frames: 1     # Her N frame'de bir işle (1=hepsi)
+  use_gpu: false                # GPU kullan (Jetson için true yap)
+  thread_count: 2               # İşlem thread sayısı
+
+# --- Jetson DeepStream Ayarları (Üretim fazı) ---
+deepstream:
+  enabled: false
+  config_path: "configs/deepstream_config.txt"
+  batch_size: 8                 # Eş zamanlı kamera sayısı
+  inference_interval: 1
+  tracker_type: "NvDCF"         # "IOU" | "NvDCF" | "DeepSORT"

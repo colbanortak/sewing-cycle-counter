@@ -1,0 +1,39 @@
+# Sewing Cycle Counter - Dependencies
+# PoC Phase - Standard Python Environment
+
+# Computer Vision & AI
+mediapipe>=0.10.9
+opencv-python>=4.9.0
+numpy>=1.24.0
+
+# Signal Processing
+scipy>=1.11.0
+
+# Data & Config
+pyyaml>=6.0
+pydantic>=2.5.0
+
+# Database
+sqlalchemy>=2.0.0
+
+# API & Dashboard
+fastapi>=0.109.0
+uvicorn>=0.27.0
+python-multipart>=0.0.6
+jinja2>=3.1.0
+
+# Visualization & Plotting
+matplotlib>=3.8.0
+
+# Utilities
+python-dateutil>=2.8.0
+tqdm>=4.66.0
+
+# Testing
+pytest>=7.4.0
+
+# --- Jetson Orin Production Phase (uncomment when deploying) ---
+# tensorrt
+# pycuda
+# jetson-utils
+# pyds  # DeepStream Python bindings

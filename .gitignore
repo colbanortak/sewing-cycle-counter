@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual env
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Data (large files)
+data/reference_videos/*.mp4
+data/reference_videos/*.avi
+data/reference_videos/*.mov
+data/trained_models/*.json
+data/logs/*.db
+data/logs/*.mp4
+data/logs/*.json
+data/trained_models/*.png
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Credentials
+ssh_informations.txt
+Camera_Bilgileri.txt
+*.pem
+*.key
+
+# Temp
+*.tmp
+*.bak
