@@ -220,6 +220,34 @@ async def list_machines():
     return [dict(r) for r in rows]
 
 
+@app.delete("/api/machines/{machine_id}")
+async def delete_machine(machine_id: str):
+    conn = get_db()
+    conn.execute("DELETE FROM machines WHERE id=?", (machine_id,))
+    conn.commit()
+    conn.close()
+    return {"status": "deleted"}
+
+
+@app.put("/api/machines/{machine_id}")
+async def update_machine(machine_id: str, name: str = Form(None),
+                         camera_source: str = Form(None), operator: str = Form(None)):
+    conn = get_db()
+    machine = conn.execute("SELECT * FROM machines WHERE id=?", (machine_id,)).fetchone()
+    if not machine:
+        conn.close()
+        raise HTTPException(404, "Makine bulunamadi")
+    if name is not None:
+        conn.execute("UPDATE machines SET name=? WHERE id=?", (name, machine_id))
+    if camera_source is not None:
+        conn.execute("UPDATE machines SET camera_source=? WHERE id=?", (camera_source, machine_id))
+    if operator is not None:
+        conn.execute("UPDATE machines SET operator=? WHERE id=?", (operator, machine_id))
+    conn.commit()
+    conn.close()
+    return {"status": "updated"}
+
+
 # ============================================================
 # CANLI SAYIM
 # ============================================================

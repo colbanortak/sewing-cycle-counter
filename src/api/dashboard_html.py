@@ -168,7 +168,7 @@ tbody tr:hover{background:rgba(99,102,241,.05)}
     </form>
   </div>
   <h3 style="margin-bottom:16px;font-size:16px">Kayitli Makineler</h3>
-  <div style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Ad</th><th>Kamera</th><th>Operator</th><th>Urun</th><th>Durum</th></tr></thead>
+  <div style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Ad</th><th>Kamera</th><th>Operator</th><th>Urun</th><th>Durum</th><th>Islem</th></tr></thead>
   <tbody id="machines-tbody"><tr><td colspan="6" style="text-align:center;color:var(--text2)">Yukleniyor...</td></tr></tbody></table></div>
 </div>
 <div class="page" id="page-live">
@@ -314,10 +314,10 @@ async function loadMachines(){
   try{
     let machines=await api('/api/machines');
     let tbody=document.getElementById('machines-tbody');
-    if(!machines.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--text2)">Henuz makine yok</td></tr>';return}
+    if(!machines.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text2)">Henuz makine yok</td></tr>';return}
     tbody.innerHTML=machines.map(m=>{
       let st=m.is_active?'<span class="badge badge-green">Aktif</span>':'<span class="badge badge-gray">Pasif</span>';
-      return '<tr><td style="font-weight:600">'+m.id+'</td><td>'+m.name+'</td><td style="font-family:JetBrains Mono,monospace;font-size:12px">'+m.camera_source+'</td><td>'+(m.operator||'-')+'</td><td>'+(m.current_product||'-')+'</td><td>'+st+'</td></tr>';
+      return '<tr><td style="font-weight:600">'+m.id+'</td><td>'+m.name+'</td><td style="font-family:JetBrains Mono,monospace;font-size:12px">'+m.camera_source+'</td><td>'+(m.operator||'-')+'</td><td>'+(m.current_product||'-')+'</td><td>'+st+'</td><td><button class="btn btn-danger btn-sm" onclick="deleteMachine(''+m.id+'')">Sil</button></td></tr>';
     }).join('');
   }catch(e){}
 }
@@ -331,6 +331,11 @@ async function addMachine(e){
   fd.append('operator',document.getElementById('m-operator').value);
   try{await api('/api/machines',{method:'POST',body:fd});toast('Makine eklendi','success');document.getElementById('machine-form').reset();loadMachines()}catch(e){}
   return false;
+}
+
+async function deleteMachine(id){
+  if(!confirm(id+' makinesini silmek istediginize emin misiniz?'))return;
+  try{await api('/api/machines/'+encodeURIComponent(id),{method:'DELETE'});toast('Makine silindi','success');loadMachines()}catch(e){}
 }
 
 // LIVE
