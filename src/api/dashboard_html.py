@@ -1,6 +1,6 @@
 """Modern Dashboard HTML - COLBAN Performans Takip Sistemi"""
 
-DASHBOARD_HTML = '''<!DOCTYPE html>
+DASHBOARD_HTML = """<!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
@@ -287,7 +287,7 @@ async function loadProducts(){
     if(!products.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--text2)">Henuz urun yok</td></tr>';return}
     tbody.innerHTML=products.map(p=>{
       let sc={'ready':'badge-green','training':'badge-yellow','failed':'badge-red','pending':'badge-gray'}[p.status]||'badge-gray';
-      return '<tr><td style="font-weight:600">'+p.name+'</td><td>'+p.cycle_count+'</td><td>'+(p.avg_cycle_duration?p.avg_cycle_duration.toFixed(2)+'s':'-')+'</td><td><span class="badge '+sc+'">'+p.status+'</span></td><td>'+(p.trained_at||'-')+'</td><td><button class="btn btn-danger btn-sm" onclick="deleteProduct(\''+p.name+'\')">Sil</button></td></tr>';
+      return '<tr><td style="font-weight:600">'+p.name+'</td><td>'+p.cycle_count+'</td><td>'+(p.avg_cycle_duration?p.avg_cycle_duration.toFixed(2)+'s':'-')+'</td><td><span class="badge '+sc+'">'+p.status+'</span></td><td>'+(p.trained_at||'-')+'</td><td><button class="btn btn-danger btn-sm" data-name="'+p.name+'" onclick="deleteProduct(this.dataset.name)">Sil</button></td></tr>';
     }).join('');
   }catch(e){}
 }
@@ -317,7 +317,7 @@ async function loadMachines(){
     if(!machines.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text2)">Henuz makine yok</td></tr>';return}
     tbody.innerHTML=machines.map(m=>{
       let st=m.is_active?'<span class="badge badge-green">Aktif</span>':'<span class="badge badge-gray">Pasif</span>';
-      return '<tr><td style="font-weight:600">'+m.id+'</td><td>'+m.name+'</td><td style="font-family:JetBrains Mono,monospace;font-size:12px">'+m.camera_source+'</td><td>'+(m.operator||'-')+'</td><td>'+(m.current_product||'-')+'</td><td>'+st+'</td><td><button class="btn btn-danger btn-sm" onclick="deleteMachine(''+m.id+'')">Sil</button></td></tr>';
+      return '<tr><td style="font-weight:600">'+m.id+'</td><td>'+m.name+'</td><td style="font-family:JetBrains Mono,monospace;font-size:12px">'+m.camera_source+'</td><td>'+(m.operator||'-')+'</td><td>'+(m.current_product||'-')+'</td><td>'+st+'</td><td><button class="btn btn-danger btn-sm" data-id="'+m.id+'" onclick="deleteMachine(this.dataset.id)">Sil</button></td></tr>';
     }).join('');
   }catch(e){}
 }
@@ -360,7 +360,7 @@ async function loadLiveStatus(){
       let dotClass=active?'on':'off';
       let cycles=m.last_session?m.last_session.total_cycles:0;
       let product=m.current_product||'-';
-      let stopBtn=active?'<button class="btn btn-danger btn-sm" onclick="stopLive(\''+m.id+'\')">Durdur</button>':'';
+      let stopBtn=active?'<button class="btn btn-danger btn-sm" data-id="'+m.id+'" onclick="stopLive(this.dataset.id)">Durdur</button>':'';
       return '<div class="machine-card"><div class="mc-header"><span class="mc-id">'+m.id+'</span><span class="mc-dot '+dotClass+'"></span></div><div class="mc-info">Urun: '+product+'</div><div class="mc-info">Operator: '+(m.operator||'-')+'</div><div class="mc-cycles">'+cycles+'</div><div style="margin-top:12px">'+stopBtn+'</div></div>';
     }).join('');
     let activeCnt=machines.filter(m=>m.is_active).length;
@@ -442,4 +442,4 @@ function closeSidebar(){
 showPage('overview');
 
 </script>
-</body></html>'''
+</body></html>"""
